@@ -1,0 +1,5 @@
+# Block direct access to prescription files
+Order Deny,Allow
+
+# Deny all direct requests to this folder
+Deny from all

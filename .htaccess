@@ -1,0 +1,11 @@
+# تشغيل نظام إعادة كتابة الروابط في Apache
+RewriteEngine On
+
+# إذا الطلب ليس ملفًا حقيقيًا موجودًا
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# وإذا الطلب ليس مجلدًا حقيقيًا موجودًا
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# حول أي طلب آخر إلى index.php مع الحفاظ على Query String
+RewriteRule ^(.*)$ index.php [QSA,L]
