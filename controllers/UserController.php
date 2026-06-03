@@ -253,11 +253,64 @@ class UserController
             setFlash("error", "User not found.");
             redirect(BASE_URL . "index.php?page=users");
         }
+        $avatarFileName = $user["avatar"] ?? null;
 
+        // Remove current avatar if the admin selected the remove option
+        if (isset($_POST["remove_avatar"]) && $_POST["remove_avatar"] === "1") {
+            if (!empty($avatarFileName)) {
+                $oldAvatarPath = __DIR__ . "/../public/uploads/avatars/" . basename($avatarFileName);
+
+                if (file_exists($oldAvatarPath)) {
+                    unlink($oldAvatarPath);
+                }
+            }
+
+            $avatarFileName = null;
+        }
+
+        if (isset($_FILES["avatar"]) && $_FILES["avatar"]["error"] !== UPLOAD_ERR_NO_FILE) {
+            if ($_FILES["avatar"]["error"] !== UPLOAD_ERR_OK) {
+                setFlash("error", "Avatar upload failed.");
+                redirect(BASE_URL . "index.php?page=users&action=edit&id=" . $userId);
+            }
+
+            if ($_FILES["avatar"]["size"] > 2 * 1024 * 1024) {
+                setFlash("error", "Avatar image must not exceed 2 MB.");
+                redirect(BASE_URL . "index.php?page=users&action=edit&id=" . $userId);
+            }
+
+            $imageInfo = getimagesize($_FILES["avatar"]["tmp_name"]);
+
+            if ($imageInfo === false) {
+                setFlash("error", "Uploaded avatar must be a valid image.");
+                redirect(BASE_URL . "index.php?page=users&action=edit&id=" . $userId);
+            }
+
+            $allowedTypes = [
+                IMAGETYPE_JPEG => "jpg",
+                IMAGETYPE_PNG => "png",
+                IMAGETYPE_WEBP => "webp"
+            ];
+
+            if (!array_key_exists($imageInfo[2], $allowedTypes)) {
+                setFlash("error", "Only JPG, PNG, and WEBP images are allowed.");
+                redirect(BASE_URL . "index.php?page=users&action=edit&id=" . $userId);
+            }
+
+            $extension = $allowedTypes[$imageInfo[2]];
+            $avatarFileName = "avatar_" . $userId . "_" . time() . "." . $extension;
+
+            $uploadPath = __DIR__ . "/../public/uploads/avatars/" . $avatarFileName;
+
+            if (!move_uploaded_file($_FILES["avatar"]["tmp_name"], $uploadPath)) {
+                setFlash("error", "Failed to save avatar image.");
+                redirect(BASE_URL . "index.php?page=users&action=edit&id=" . $userId);
+            }
+        }
         $success = $userModel->update($userId, [
             "name" => $name,
             "phone" => $phone,
-            "avatar" => $user["avatar"] ?? null
+            "avatar" => $avatarFileName
         ]);
 
         if (!$success) {

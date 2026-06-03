@@ -55,7 +55,7 @@ $userStatus = (int) ($editUser["is_active"] ?? 0);
                     </h3>
                 </div>
 
-                <form method="POST" action="<?= BASE_URL ?>index.php?page=users&action=update">
+                <form method="POST" action="<?= BASE_URL ?>index.php?page=users&action=update" enctype="multipart/form-data">
                     <div class="card-body">
 
                         <input type="hidden" name="csrf_token" value="<?= CSRF::generateToken() ?>">
@@ -103,6 +103,36 @@ $userStatus = (int) ($editUser["is_active"] ?? 0);
                                 class="form-control"
                                 value="<?= sanitize($userPhone) ?>">
                         </div>
+
+                        <div class="form-group">
+                            <label>Avatar</label>
+                            <input type="file" name="avatar" class="form-control" accept="image/*">
+                            <small class="text-muted">
+                                Optional. Allowed image types only.
+                            </small>
+                        </div>
+
+                        <?php if (!empty($editUser["avatar"])): ?>
+                            <div class="form-group">
+                                <label>Current Avatar</label><br>
+
+                                <img
+                                    src="<?= BASE_URL ?>public/uploads/avatars/<?= sanitize($editUser["avatar"]) ?>"
+                                    alt="Avatar"
+                                    style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%;">
+
+                                <div class="mt-2">
+                                    <label>
+                                        <input type="checkbox" name="remove_avatar" value="1">
+                                        Remove current avatar
+                                    </label>
+                                </div>
+
+                                <small class="text-muted">
+                                    Check this option and click Save Changes to remove the avatar.
+                                </small>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="form-group">
                             <label>Status</label>
