@@ -7,13 +7,20 @@ require_once __DIR__ . "/../../core/CSRF.php";
 Auth::requireRole("patient");
 
 $timeSlots = [
-    "09:00:00", "09:30:00",
-    "10:00:00", "10:30:00",
-    "11:00:00", "11:30:00",
-    "12:00:00", "12:30:00",
-    "13:00:00", "13:30:00",
-    "14:00:00", "14:30:00",
-    "15:00:00", "15:30:00",
+    "09:00:00",
+    "09:30:00",
+    "10:00:00",
+    "10:30:00",
+    "11:00:00",
+    "11:30:00",
+    "12:00:00",
+    "12:30:00",
+    "13:00:00",
+    "13:30:00",
+    "14:00:00",
+    "14:30:00",
+    "15:00:00",
+    "15:30:00",
     "16:00:00"
 ];
 
@@ -25,7 +32,23 @@ require_once __DIR__ . "/../partials/sidebar.php";
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Book Appointment</h1>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Book Appointment</h1>
+                </div>
+
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=dashboard">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=appointments">Appointments</a>
+                        </li>
+                        <li class="breadcrumb-item active">Book Appointment</li>
+                    </ol>
+                </div>
+            </div>
         </div>
     </section>
 

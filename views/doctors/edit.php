@@ -17,7 +17,23 @@ require_once __DIR__ . "/../partials/sidebar.php";
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Edit Doctor</h1>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Edit Doctor</h1>
+                </div>
+
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=dashboard">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=doctors">Doctors</a>
+                        </li>
+                        <li class="breadcrumb-item active">Edit Doctor</li>
+                    </ol>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -53,10 +69,9 @@ require_once __DIR__ . "/../partials/sidebar.php";
                             <label>Specialization</label>
                             <select name="specialization_id" class="form-control" required>
                                 <?php foreach ($specializations as $specialization): ?>
-                                    <option 
+                                    <option
                                         value="<?= sanitize($specialization["id"]) ?>"
-                                        <?= $specialization["name"] === $doctor["specialization_name"] ? "selected" : "" ?>
-                                    >
+                                        <?= $specialization["name"] === $doctor["specialization_name"] ? "selected" : "" ?>>
                                         <?= sanitize($specialization["name"]) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -70,14 +85,13 @@ require_once __DIR__ . "/../partials/sidebar.php";
 
                         <div class="form-group">
                             <label>Consultation Fee</label>
-                            <input 
-                                type="number" 
-                                step="0.01" 
-                                name="consultation_fee" 
-                                class="form-control" 
+                            <input
+                                type="number"
+                                step="0.01"
+                                name="consultation_fee"
+                                class="form-control"
                                 value="<?= sanitize($doctor["consultation_fee"]) ?>"
-                                required
-                            >
+                                required>
                         </div>
 
                         <div class="form-group">
@@ -87,12 +101,11 @@ require_once __DIR__ . "/../partials/sidebar.php";
                                 <?php foreach ($days as $day): ?>
                                     <div class="col-md-2">
                                         <label>
-                                            <input 
-                                                type="checkbox" 
-                                                name="available_days[]" 
+                                            <input
+                                                type="checkbox"
+                                                name="available_days[]"
                                                 value="<?= $day ?>"
-                                                <?= in_array($day, $selectedDays) ? "checked" : "" ?>
-                                            >
+                                                <?= in_array($day, $selectedDays) ? "checked" : "" ?>>
                                             <?= $day ?>
                                         </label>
                                     </div>

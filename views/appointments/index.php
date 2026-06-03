@@ -17,16 +17,29 @@ require_once __DIR__ . "/../partials/sidebar.php";
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1>Appointments</h1>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Appointments</h1>
+                </div>
 
-                <?php if ($role === "patient"): ?>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=dashboard">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item active">Appointments</li>
+                    </ol>
+                </div>
+            </div>
+
+            <?php if ($role === "patient"): ?>
+                <div class="d-flex justify-content-end">
                     <a href="<?= BASE_URL ?>index.php?page=appointments&action=book" class="btn btn-primary">
                         <i class="fas fa-plus"></i>
                         Book Appointment
                     </a>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 

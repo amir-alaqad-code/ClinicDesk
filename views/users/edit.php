@@ -23,7 +23,23 @@ $userStatus = (int) ($editUser["is_active"] ?? 0);
 <div class="content-wrapper">
     <section class="content-header">
         <div class="container-fluid">
-            <h1>Edit User</h1>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Edit User</h1>
+                </div>
+
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=dashboard">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="<?= BASE_URL ?>index.php?page=users">Users</a>
+                        </li>
+                        <li class="breadcrumb-item active">Edit User</li>
+                    </ol>
+                </div>
+            </div>
         </div>
     </section>
 
