@@ -195,4 +195,78 @@ class UserController
         setFlash("success", "User status updated successfully.");
         redirect(BASE_URL . "index.php?page=users");
     }
+
+    // Show edit user form
+    public function edit(): void
+    {
+        Auth::requireRole("admin");
+
+        $userId = (int) ($_GET["id"] ?? 0);
+
+        if ($userId <= 0) {
+            setFlash("error", "Invalid user ID.");
+            redirect(BASE_URL . "index.php?page=users");
+        }
+
+        $userModel = new UserModel();
+        $user = $userModel->findById($userId);
+
+        if (!$user) {
+            setFlash("error", "User not found.");
+            redirect(BASE_URL . "index.php?page=users");
+        }
+
+        $pageTitle = "Edit User";
+
+        require_once __DIR__ . "/../views/users/edit.php";
+    }
+
+    // Update user basic information
+    public function update(): void
+    {
+        Auth::requireRole("admin");
+
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            require_once __DIR__ . "/../views/errors/403.php";
+            exit;
+        }
+
+        $csrfToken = $_POST["csrf_token"] ?? "";
+
+        if (!CSRF::validateToken($csrfToken)) {
+            setFlash("error", "Invalid request. Please try again.");
+            redirect(BASE_URL . "index.php?page=users");
+        }
+
+        $userId = (int) ($_POST["id"] ?? 0);
+        $name = trim($_POST["name"] ?? "");
+        $phone = trim($_POST["phone"] ?? "");
+
+        if ($userId <= 0 || $name === "") {
+            setFlash("error", "Name is required.");
+            redirect(BASE_URL . "index.php?page=users");
+        }
+
+        $userModel = new UserModel();
+        $user = $userModel->findById($userId);
+
+        if (!$user) {
+            setFlash("error", "User not found.");
+            redirect(BASE_URL . "index.php?page=users");
+        }
+
+        $success = $userModel->update($userId, [
+            "name" => $name,
+            "phone" => $phone,
+            "avatar" => $user["avatar"] ?? null
+        ]);
+
+        if (!$success) {
+            setFlash("error", "Failed to update user.");
+            redirect(BASE_URL . "index.php?page=users&action=edit&id=" . $userId);
+        }
+
+        setFlash("success", "User updated successfully.");
+        redirect(BASE_URL . "index.php?page=users");
+    }
 }
