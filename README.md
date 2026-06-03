@@ -95,7 +95,6 @@ clinicdesk/
 ├── clinicdesk_db.sql
 ├── config/
 │   ├── config.php
-│   ├── database.php
 │   └── database.example.php
 ├── core/
 │   ├── Auth.php
