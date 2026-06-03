@@ -1,13 +1,14 @@
 # ClinicDesk – Clinic Management Dashboard
 
-ClinicDesk is a secure clinic management dashboard built with **PHP**, **MySQL**, and **AdminLTE 3**.  
-The system is designed for internal clinic use and supports three main roles:
+ClinicDesk is a secure and private clinic management dashboard built with **PHP**, **MySQL**, and **AdminLTE 3**.
+
+The system is designed for internal clinic operations and supports three main roles:
 
 - **Admin**
 - **Doctor**
 - **Patient**
 
-Each role has its own dashboard, permissions, and allowed actions.
+Each role has a protected dashboard, specific permissions, and controlled access to the system features.
 
 ---
 
@@ -17,69 +18,73 @@ Each role has its own dashboard, permissions, and allowed actions.
 
 ---
 
-## Project Description
+## Project Overview
 
-ClinicDesk is a private web-based clinic management system that helps manage users, doctors, appointments, prescriptions, reports, and dashboard statistics from one organized interface.
+ClinicDesk is a web-based clinic management system that helps clinics manage users, doctors, medical specializations, appointments, prescriptions, reports, and dashboard statistics from one organized interface.
 
-The project follows a simple MVC-like structure using:
+The project follows a simple MVC-like architecture using:
 
-- Front Controller routing through `index.php`
+- A front controller through `index.php`
 - Controllers for request handling
 - Models for database operations
-- Views for UI rendering
+- Views for user interface rendering
 - Reusable AdminLTE partials
 - Role-based access control
-- Secure form handling with CSRF protection
+- Secure form processing using CSRF tokens
 
-The system does not include public registration.  
+The system is private and does not include a public registration page.  
 All accounts are created and managed by the admin.
 
 ---
 
-## Main Roles
+## Main Roles and Permissions
 
 ### Admin
 
 The admin can:
 
-- Login from the shared login page
-- View the admin dashboard
+- Login through the shared login page
+- Access the admin dashboard
+- View dashboard statistics
 - Manage users
 - Create admin, doctor, and patient accounts
-- Edit user basic information
 - Search users by name or email
 - Filter users by role
+- Edit user basic information
+- Upload, display, and remove user avatars
 - Activate and deactivate users
 - Prevent self-deactivation
 - Manage doctors
-- Edit doctor professional information
+- Edit doctor specialization, bio, consultation fee, and available days
 - Manage medical specializations
-- Add and delete specializations safely
+- Add new specializations
+- Delete unused specializations
+- Prevent deletion of specializations assigned to doctors
 - View all appointments
 - Update appointment statuses
 - Generate appointment reports
-- Export reports as CSV
+- Export appointment reports as CSV
 
 ### Doctor
 
 The doctor can:
 
-- Login from the shared login page
-- View the doctor dashboard
+- Login through the shared login page
+- Access the doctor dashboard
 - View only their own appointments
 - Update appointment status
 - Add doctor notes
-- Add prescriptions after completed appointments
-- Upload prescription PDF files securely
+- Add prescriptions only after appointment completion
+- Upload optional prescription PDF files securely
 
 ### Patient
 
 The patient can:
 
-- Login from the shared login page
-- View the patient dashboard
+- Login through the shared login page
+- Access the patient dashboard
 - Book appointments with doctors
-- View their own appointments
+- View only their own appointments
 - Cancel pending appointments
 - View their own prescriptions
 - Download prescription PDF files securely
@@ -88,115 +93,175 @@ The patient can:
 
 ## Main Features
 
-### Authentication
+### Authentication and Authorization
 
-- One login page for all roles
+- Single login page for all roles
 - Session-based authentication
 - Role-based dashboard redirection
-- Secure logout using POST
-- Session regeneration after login
-- General error messages for invalid login attempts
+- Role-based access control using `Auth::requireRole()`
+- Secure logout using POST request
+- CSRF protection for sensitive forms
+- Session ID regeneration after successful login
+- General login error messages for security
+- Inactive users are prevented from logging in
 
 ### User Management
 
+The admin can manage all system users.
+
+Supported features:
+
 - List all users
-- Filter users by role
 - Search users by name or email
+- Filter users by role
 - Create users with roles
 - Edit user name and phone
-- Activate or deactivate users
-- Prevent admin from deactivating their own account
+- Upload user avatar
+- Validate avatar images using `getimagesize()`
+- Display uploaded avatars in the users table
+- Remove existing avatars
+- Activate and deactivate users
+- Prevent the current admin from deactivating their own account
 - CSRF protection for sensitive actions
 
 ### Doctor Management
 
-- Doctors are created from the Users panel by selecting role `doctor`
-- Each doctor has a linked user account
-- Doctor profile includes:
-  - Specialization
-  - Bio
-  - Consultation fee
-  - Available days
-- Admin can edit doctor professional information
+Doctors are created from the Users panel by selecting the `doctor` role.
+
+Each doctor has:
+
+- A linked user account
+- A specialization
+- A bio
+- A consultation fee
+- Available days
+
+The admin can:
+
+- View all doctors
+- Edit doctor professional information
+- Change doctor specialization
+- Update consultation fee
+- Update available days
+- View doctor status
+
+Doctor photos are handled through the user avatar field for doctor accounts.
 
 ### Specialization Management
 
-- Admin can view all specializations
-- Admin can add new specializations
-- Admin can delete unused specializations
-- Used specializations cannot be deleted if assigned to doctors
+The admin can manage medical specializations.
+
+Supported features:
+
+- View all specializations
+- Add new specializations
+- Delete unused specializations
+- Prevent deleting specializations that are already assigned to doctors
+- CSRF protection for add and delete operations
+- DataTables support for listing, search, sorting, and pagination
 
 ### Appointment Management
 
-- Patient can book appointments
-- Doctor availability is checked before booking
+Patients can book appointments with available doctors.
+
+Booking rules:
+
+- Doctor is required
+- Date is required
+- Time slot is required
 - Appointment date cannot be in the past
-- Double booking is prevented
-- Appointments have statuses:
-  - `pending`
-  - `confirmed`
-  - `completed`
-  - `cancelled`
-- Patient can cancel only pending appointments
-- Doctor and admin can update appointment status
+- Doctor availability is checked before booking
+- Double booking is prevented for the same doctor, date, and time
+
+Appointment statuses:
+
+- `pending`
+- `confirmed`
+- `completed`
+- `cancelled`
+
+Role behavior:
+
 - Admin can view all appointments
-- Doctor can view only own appointments
-- Patient can view only own appointments
+- Doctor can view only their own appointments
+- Patient can view only their own appointments
+- Doctor and admin can update appointment status
+- Patient can cancel only pending appointments
 
 ### Prescription Management
 
-- Doctor can add prescription only after appointment completion
-- One prescription is allowed per appointment
-- Diagnosis and medications are required
-- Optional PDF upload is supported
-- PDF files are validated using MIME type checking
-- Patient can view and download only their own prescriptions
-- Prescription download is handled through a secure controller
-- Direct access to uploaded prescription files is blocked
+Doctors can add prescriptions after completing appointments.
 
-### Dashboards
+Prescription rules:
 
-The system includes role-specific dashboards:
+- Appointment must be completed
+- Doctor must own the appointment
+- Only one prescription is allowed per appointment
+- Diagnosis is required
+- Medications are required
+- Notes are optional
+- PDF upload is optional
+
+PDF security:
+
+- PDF file size is validated
+- PDF MIME type is validated using `finfo_file()`
+- PDF files are stored in a protected upload directory
+- Direct access to PDF files is blocked
+- PDF download is handled through a secure controller
+- Patient can download only their own prescriptions
+- Doctor can access only prescriptions related to their own appointments
+- Admin access is controlled by role permissions
+
+### Dashboard Statistics
+
+The system includes role-specific dashboards.
 
 #### Admin Dashboard
+
+The admin dashboard shows:
 
 - Number of admins
 - Number of doctors
 - Number of patients
-- Appointments today
-- This week appointment status summary
+- Number of appointments today
+- Appointment status summary for the current week
 - Recent appointments
 
 #### Doctor Dashboard
 
-- Monthly appointment count
-- Pending appointment count
-- Completed appointment count
+The doctor dashboard shows:
+
+- This month’s appointments
+- Pending appointments
+- Completed appointments
 - Upcoming appointments
 
 #### Patient Dashboard
+
+The patient dashboard shows:
 
 - Active appointments
 - Completed appointments
 - Prescription count
 - Next upcoming appointment
 
-### Reports
+### Reports and CSV Export
 
-Admin can generate appointment reports using:
+The admin can generate appointment reports using:
 
 - Start date
 - End date
 - Doctor filter
 - Status filter
 
-Reports include:
+Report data includes:
 
 - Patient name
 - Doctor name
 - Specialization
-- Date
-- Time
+- Appointment date
+- Appointment time
 - Status
 - Reason
 
@@ -205,6 +270,114 @@ Reports can be exported as:
 ```text
 CSV
 ```
+
+CSV export is generated using PHP and downloaded as a file.
+
+---
+
+## AdminLTE 3 Integration
+
+The project uses **AdminLTE 3** locally from:
+
+```text
+public/assets/adminlte/
+```
+
+No external CDN is required.
+
+Implemented AdminLTE features:
+
+- Login card
+- Dashboard layout
+- Sidebar navigation
+- Navbar
+- Cards
+- Small boxes
+- Badges
+- Alerts
+- Buttons
+- Breadcrumbs
+- DataTables
+- Responsive tables
+
+Reusable partials:
+
+```text
+views/partials/header.php
+views/partials/navbar.php
+views/partials/sidebar.php
+views/partials/footer.php
+views/partials/alerts.php
+```
+
+---
+
+## DataTables
+
+DataTables are enabled for listing pages to provide:
+
+- Client-side search
+- Sorting
+- Pagination
+- Responsive table behavior
+- Show entries control
+
+Used in pages such as:
+
+- Users
+- Doctors
+- Specializations
+- Appointments
+- Prescriptions
+- Reports
+
+---
+
+## Breadcrumbs
+
+Breadcrumbs are added inside page headers to improve navigation.
+
+Examples:
+
+```text
+Dashboard > Users
+Dashboard > Doctors
+Dashboard > Appointments
+Dashboard > Reports
+```
+
+Sub-pages include deeper breadcrumbs such as:
+
+```text
+Dashboard > Users > Create User
+Dashboard > Users > Edit User
+Dashboard > Doctors > Edit Doctor
+Dashboard > Appointments > Book Appointment
+Dashboard > Appointments > Add Prescription
+```
+
+---
+
+## Security Features
+
+The project includes the following security practices:
+
+- Password hashing using `password_hash()`
+- Password verification using `password_verify()`
+- Prepared statements for SQL queries
+- CSRF token generation and validation
+- Role-based access control
+- Session-based authentication
+- Session ID regeneration after login
+- Output escaping using `htmlspecialchars()`
+- Inactive account login prevention
+- Ownership checks for appointments and prescriptions
+- Avatar validation using `getimagesize()`
+- PDF validation using `finfo_file()`
+- Protected upload directories
+- Secure prescription download through controller
+- Direct prescription file access prevention using `.htaccess`
+- Sensitive database configuration excluded from GitHub
 
 ---
 
@@ -219,25 +392,8 @@ CSV
 - HTML
 - CSS
 - JavaScript
+- DataTables
 - XAMPP
-
----
-
-## Security Features
-
-The project includes several important security practices:
-
-- Password hashing using `password_hash()`
-- Password verification using `password_verify()`
-- CSRF protection for POST forms
-- Prepared statements for SQL queries
-- Role-based access control using `Auth::requireRole()`
-- Session ID regeneration after login
-- Output escaping using `htmlspecialchars()`
-- PDF MIME type validation using `finfo_file()`
-- Secure prescription PDF download through controller
-- Direct file access prevention using `.htaccess`
-- Sensitive database configuration excluded from GitHub
 
 ---
 
@@ -305,34 +461,25 @@ The project uses a MySQL database named:
 clinicdesk_db
 ```
 
-The database schema is included in:
+The database export file is included as:
 
 ```text
 clinicdesk_db.sql
 ```
 
-Main database tables:
+### Database Tables
 
-- `users`
-- `specializations`
-- `doctors`
-- `appointments`
-- `prescriptions`
-
----
-
-## Database Tables Overview
-
-### users
+#### users
 
 Stores all system accounts:
 
-- Admins
-- Doctors
-- Patients
+- Admin users
+- Doctor users
+- Patient users
 
-Important fields:
+Important columns:
 
+- `id`
 - `name`
 - `email`
 - `password`
@@ -342,35 +489,39 @@ Important fields:
 - `is_active`
 - `created_at`
 
-### specializations
+#### specializations
 
 Stores medical specializations.
 
-Examples:
+Important columns:
 
-- Cardiology
-- Dermatology
-- Pediatrics
-- Neurology
+- `id`
+- `name`
 
-### doctors
+Specialization names are unique.
 
-Stores doctor-specific professional data and links each doctor to a user account.
+#### doctors
 
-Important fields:
+Stores doctor profile details.
 
+Important columns:
+
+- `id`
 - `user_id`
 - `specialization_id`
 - `bio`
 - `consultation_fee`
 - `available_days`
 
-### appointments
+Each doctor is connected to one user account.
 
-Stores appointment bookings between patients and doctors.
+#### appointments
 
-Important fields:
+Stores appointment bookings.
 
+Important columns:
+
+- `id`
 - `patient_id`
 - `doctor_id`
 - `appt_date`
@@ -378,20 +529,23 @@ Important fields:
 - `status`
 - `reason`
 - `doctor_notes`
+- `created_at`
 
 The database prevents duplicate bookings for the same doctor at the same date and time.
 
-### prescriptions
+#### prescriptions
 
-Stores prescriptions connected to completed appointments.
+Stores prescriptions connected to appointments.
 
-Important fields:
+Important columns:
 
+- `id`
 - `appointment_id`
 - `diagnosis`
 - `medications`
 - `notes`
 - `file_path`
+- `created_at`
 
 Only one prescription is allowed per appointment.
 
@@ -428,9 +582,9 @@ Open phpMyAdmin and create a database named:
 clinicdesk_db
 ```
 
-### 5. Import SQL File
+### 5. Import the SQL File
 
-Import the file:
+Import:
 
 ```text
 clinicdesk_db.sql
@@ -438,19 +592,19 @@ clinicdesk_db.sql
 
 ### 6. Configure Database Connection
 
-Copy:
+Copy this file:
 
 ```text
 config/database.example.php
 ```
 
-Rename the copy to:
+Rename the copied file to:
 
 ```text
 config/database.php
 ```
 
-Then update the database values if needed:
+Update the values if needed:
 
 ```php
 <?php
@@ -461,17 +615,21 @@ define("DB_USER", "root");
 define("DB_PASS", "");
 ```
 
-> `config/database.php` is local-only and should not be committed to GitHub.
+Important:
+
+```text
+config/database.php is local-only and should not be committed to GitHub.
+```
 
 ### 7. Run the Project
 
-If Apache runs on port `8080`:
+If Apache uses port `8080`:
 
 ```text
 http://localhost:8080/clinicdesk/
 ```
 
-If Apache runs on the default port `80`:
+If Apache uses the default port `80`:
 
 ```text
 http://localhost/clinicdesk/
@@ -492,63 +650,60 @@ Password: Admin@1234
 
 ### Admin Testing
 
-1. Login as admin
-2. Open Users page
-3. Search by name or email
-4. Filter users by role
-5. Create a patient account
-6. Create a doctor account
-7. Edit user name and phone
-8. Toggle user active status
-9. Open Doctors page
-10. Edit doctor specialization, fee, bio, and available days
-11. Open Specializations page
-12. Add a new specialization
-13. Delete an unused specialization
-14. Try deleting a used specialization and confirm it is blocked
-15. Open Reports page
-16. Generate a report
-17. Export CSV
-
-### Patient Testing
-
-1. Login as patient
-2. Open Appointments
-3. Book an appointment with an available doctor
-4. Try booking the same slot again and confirm it is blocked
-5. Cancel a pending appointment
-6. View prescriptions
-7. Download prescription PDF if available
+1. Login as admin.
+2. Open the dashboard.
+3. Open Users.
+4. Search users by name or email.
+5. Filter users by role.
+6. Create a patient account.
+7. Create a doctor account.
+8. Edit user name and phone.
+9. Upload a user avatar.
+10. Remove a user avatar.
+11. Toggle user active status.
+12. Confirm the admin cannot deactivate their own account.
+13. Open Doctors.
+14. Edit doctor specialization, bio, fee, and available days.
+15. Open Specializations.
+16. Add a new specialization.
+17. Delete an unused specialization.
+18. Try deleting a used specialization and confirm deletion is blocked.
+19. Open Appointments.
+20. View all appointments.
+21. Open Reports.
+22. Generate a report.
+23. Export CSV.
 
 ### Doctor Testing
 
-1. Login as doctor
-2. Open Appointments
-3. View own appointments only
-4. Confirm appointment
-5. Complete appointment
-6. Add prescription
-7. Upload optional PDF prescription
+1. Login as doctor.
+2. Open the doctor dashboard.
+3. Open Appointments.
+4. View own appointments only.
+5. Confirm appointment.
+6. Complete appointment.
+7. Add prescription.
+8. Upload optional PDF prescription.
 
----
+### Patient Testing
 
-## Important Notes
-
-- This system is for internal clinic use only.
-- There is no public registration page.
-- Accounts are created by the admin.
-- AdminLTE files are stored locally inside the project.
-- PDF prescription files should not be accessed directly.
-- Uploaded prescription files should not be committed to GitHub.
-- `config/database.php` should stay local and private.
+1. Login as patient.
+2. Open the patient dashboard.
+3. Open Appointments.
+4. Book an appointment.
+5. Try booking the same doctor, date, and time again.
+6. Confirm duplicate booking is blocked.
+7. Cancel a pending appointment.
+8. Open Prescriptions.
+9. Download prescription PDF if available.
 
 ---
 
 ## GitHub Submission Checklist
 
-Before submitting, make sure the repository includes:
+Before submission, make sure the repository includes:
 
-- Project source code
+- Full project source code
 - `README.md`
 - `clinicdesk_db.sql`
 - `.gitignore`
@@ -560,8 +715,8 @@ Before submitting, make sure the repository includes:
 Make sure the repository does not include:
 
 - `config/database.php`
-- Real prescription PDF files
-- Private uploaded files
+- Real uploaded prescription PDF files
+- Private uploaded user files
 - Backup folders
 - ZIP archives
 
@@ -569,29 +724,61 @@ Make sure the repository does not include:
 
 ## Final Project Checklist
 
-- Login works for all roles
+- Login works for admin
+- Login works for doctor
+- Login works for patient
 - Logout works without CSRF errors
 - Admin dashboard works
 - Doctor dashboard works
 - Patient dashboard works
-- Users management works
+- Users listing works
 - User search works
 - User role filter works
+- User creation works
 - User edit works
-- User toggle active/inactive works
-- Doctors management works
-- Specializations management works
+- Avatar upload works
+- Avatar validation works
+- Avatar removal works
+- User active/inactive toggle works
+- Admin self-deactivation is blocked
+- Doctors listing works
+- Doctor edit works
+- Specializations listing works
+- Specialization add works
+- Specialization safe delete works
 - Appointment booking works
+- Past date booking is blocked
+- Doctor availability validation works
 - Appointment conflict check works
 - Appointment status update works
+- Patient appointment cancellation works
 - Prescription creation works
+- Duplicate prescription creation is blocked
 - PDF upload works
+- PDF validation works
 - Secure PDF download works
+- Direct PDF access is blocked
+- Dashboard statistics work
 - Reports work
 - CSV export works
-- SQL file is included
-- README is updated
+- DataTables work
+- Breadcrumbs appear in pages
+- SQL export file is included
+- README is complete and updated
 - GitHub repository is clean
+
+---
+
+## Important Notes
+
+- This project is for internal clinic management.
+- There is no public registration page.
+- All accounts are created by the admin.
+- AdminLTE assets are stored locally.
+- Prescription files are protected from direct access.
+- Uploaded files should not be committed to GitHub.
+- `config/database.php` should remain local.
+- Doctor photos are handled through the user avatar field for doctor accounts.
 
 ---
 
