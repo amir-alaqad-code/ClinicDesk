@@ -166,4 +166,91 @@ class UserModel extends BaseModel
 
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+
+    public function countFiltered(string $role = "", string $search = ""): int
+    {
+        $conditions = [];
+        $types = "";
+        $params = [];
+
+        if ($role !== "") {
+            $conditions[] = "role = ?";
+            $types .= "s";
+            $params[] = $role;
+        }
+
+        if ($search !== "") {
+            $conditions[] = "(name LIKE ? OR email LIKE ?)";
+            $types .= "ss";
+            $params[] = "%" . $search . "%";
+            $params[] = "%" . $search . "%";
+        }
+
+        $where = "";
+
+        if (!empty($conditions)) {
+            $where = "WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql = "SELECT COUNT(*) AS total FROM users $where";
+
+        $result = $this->execute($sql, $types, $params);
+
+        if (!$result) {
+            return 0;
+        }
+
+        $row = $result->fetch_assoc();
+
+        return (int) $row["total"];
+    }
+
+    public function getFilteredPaginated(int $page, string $role = "", string $search = ""): array
+    {
+        $offset = ($page - 1) * ITEMS_PER_PAGE;
+        $limit = ITEMS_PER_PAGE;
+
+        $conditions = [];
+        $types = "";
+        $params = [];
+
+        if ($role !== "") {
+            $conditions[] = "role = ?";
+            $types .= "s";
+            $params[] = $role;
+        }
+
+        if ($search !== "") {
+            $conditions[] = "(name LIKE ? OR email LIKE ?)";
+            $types .= "ss";
+            $params[] = "%" . $search . "%";
+            $params[] = "%" . $search . "%";
+        }
+
+        $where = "";
+
+        if (!empty($conditions)) {
+            $where = "WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql = "
+        SELECT id, name, email, role, phone, avatar, is_active, created_at
+        FROM users
+        $where
+        ORDER BY created_at DESC
+        LIMIT ? OFFSET ?
+    ";
+
+        $types .= "ii";
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $result = $this->execute($sql, $types, $params);
+
+        if (!$result) {
+            return [];
+        }
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }

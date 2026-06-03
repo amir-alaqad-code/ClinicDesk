@@ -30,11 +30,10 @@ class UserController
 
         $userModel = new UserModel();
 
-        // Get users count for later pagination
-        $totalUsers = $userModel->countAll($roleFilter);
+        $search = trim($_GET["search"] ?? "");
 
-        // Get users for the current page
-        $users = $userModel->getAllPaginated($currentPage, $roleFilter);
+        $totalUsers = $userModel->countFiltered($roleFilter, $search);
+        $users = $userModel->getFilteredPaginated($currentPage, $roleFilter, $search);
 
         require_once __DIR__ . "/../views/users/index.php";
     }

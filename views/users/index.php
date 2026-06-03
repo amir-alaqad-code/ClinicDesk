@@ -50,6 +50,16 @@ require_once __DIR__ . "/../partials/sidebar.php";
                                     <option value="patient" <?= $roleFilter === "patient" ? "selected" : "" ?>>Patient</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+    <label>Search</label>
+    <input 
+        type="text" 
+        name="search" 
+        class="form-control" 
+        placeholder="Search by name or email"
+        value="<?= sanitize($_GET["search"] ?? "") ?>"
+    >
+</div>
 
                             <div class="col-md-2 d-flex align-items-end">
                                 <button type="submit" class="btn btn-secondary btn-block">
