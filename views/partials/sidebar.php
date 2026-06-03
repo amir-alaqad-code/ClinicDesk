@@ -62,6 +62,13 @@ function activeLink(string $pageName, string $currentPage): string
                     </li>
 
                     <li class="nav-item">
+                        <a href="<?= BASE_URL ?>index.php?page=specializations" class="nav-link <?= activeLink("specializations", $currentPage) ?>">
+                            <i class="nav-icon fas fa-stethoscope"></i>
+                            <p>Specializations</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="<?= BASE_URL ?>index.php?page=appointments" class="nav-link <?= activeLink("appointments", $currentPage) ?>">
                             <i class="nav-icon fas fa-calendar-check"></i>
                             <p>Appointments</p>

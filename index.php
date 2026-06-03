@@ -23,6 +23,7 @@ $allowedPages = [
     "doctors" => "DoctorController",
     "appointments" => "AppointmentController",
     "prescriptions" => "PrescriptionController",
+    "specializations" => "SpecializationController",
     "reports" => "ReportController"
 ];
 
