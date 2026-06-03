@@ -51,7 +51,7 @@ require_once __DIR__ . "/../partials/sidebar.php";
 
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped">
+                            <table class="table table-bordered table-striped datatable">
                                 <thead>
                                     <tr>
                                         <th>Doctor</th>

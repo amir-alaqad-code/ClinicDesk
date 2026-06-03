@@ -59,17 +59,19 @@ class UserModel extends BaseModel
     public function update(int $id, array $data): bool
     {
         $sql = "
-            UPDATE users
-            SET name = ?, phone = ?, avatar = ?
-            WHERE id = ?
-        ";
+        UPDATE users
+        SET name = ?, phone = ?, avatar = ?
+        WHERE id = ?
+    ";
 
-        return (bool) $this->execute($sql, "sssi", [
+        $result = $this->execute($sql, "sssi", [
             $data["name"],
-            $data["phone"] ?? null,
-            $data["avatar"] ?? null,
+            $data["phone"],
+            $data["avatar"],
             $id
         ]);
+
+        return $result !== false;
     }
 
     // Update user password

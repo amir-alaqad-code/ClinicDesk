@@ -89,10 +89,11 @@ require_once __DIR__ . "/../partials/sidebar.php";
                     <?php $currentUser = Auth::currentUser(); ?>
                     <?php $csrfToken = CSRF::generateToken(); ?>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped datatable">
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Avatar</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
@@ -106,7 +107,7 @@ require_once __DIR__ . "/../partials/sidebar.php";
                             <tbody>
                                 <?php if (empty($users)): ?>
                                     <tr>
-                                        <td colspan="8" class="text-center">
+                                        <td colspan="9" class="text-center">
                                             No users found.
                                         </td>
                                     </tr>
@@ -115,6 +116,16 @@ require_once __DIR__ . "/../partials/sidebar.php";
                                 <?php foreach ($users as $user): ?>
                                     <tr>
                                         <td><?= sanitize($user["id"]) ?></td>
+                                        <td>
+                                            <?php if (!empty($user["avatar"])): ?>
+                                                <img
+                                                    src="<?= BASE_URL ?>public/uploads/avatars/<?= sanitize($user["avatar"]) ?>"
+                                                    alt="Avatar"
+                                                    style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
+                                            <?php else: ?>
+                                                <span class="text-muted">No image</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?= sanitize($user["name"]) ?></td>
                                         <td><?= sanitize($user["email"]) ?></td>
                                         <td>

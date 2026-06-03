@@ -8,6 +8,7 @@ $pageTitle = $pageTitle ?? APP_NAME;
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -22,7 +23,9 @@ $pageTitle = $pageTitle ?? APP_NAME;
 
     <!-- AdminLTE main CSS file from local project assets -->
     <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/adminlte/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>public/assets/adminlte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
+    <div class="wrapper">
